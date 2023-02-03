@@ -1,6 +1,6 @@
 const {prompt} = require('inquirer');
 const mysql = require('mysql2');
-const {menuQuestion, departmentQuestions, roleQuestions, employeeQuestions} = require('./questions');
+const {menuQuestion, departmentQuestions, roleQuestions, employeeQuestions, updateEmployeeQuestions} = require('./questions');
 const connection  = require('./db/connection');
 const ctable = require('console-table');
 
@@ -37,6 +37,8 @@ switch (mainmenu) {
   case ('Update Employee Role'):
     updateEmployeeRole()
     break
+  case ('Exit'):
+    process.exit()
 }
 })
 }
@@ -64,7 +66,7 @@ function viewAllRoles() {
 
 function viewAllEmployees() {
 
-  connection.query('SELECT employee.role_id, employee.first_name, employee.last_name FROM employee INNER JOIN role ON role.id = employee.id ASC;', (err, res) => {
+  connection.query('select e.id AS ID, first_name AS "First Name",last_name AS "Last Name", r.title AS Title , d.name AS Department, r.salary AS Salary , e.manager_id AS "Manager ID" from employee e left join role r on e.role_id = r.id left join departments d on r.department_id = d.id;', (err, res) => {
     if (err) throw err;
     console.table(res)
     startApp()
@@ -113,25 +115,34 @@ function addDepartment() {
 })
 }
 
-function addEmployee() {
+ function addEmployee() {
 
   connection.query('SELECT * FROM role', (err, res) => {
-    const roleList = res.map(role => ({name: role.title}))
+    const roleList = res.map(({title, id}) => ({name: title, role_id: id}))
+    // const roleName = roleList.map(role => role.name)
     console.log(roleList)
-    const roleName = roleList.map(role => role.name)
-    console.log(roleName)
     if (err) throw err;
-    employeeQuestions[2].choices = roleName
+    employeeQuestions[2].choices = roleList
   
-
+  
+      connection.query('SELECT * FROM employee WHERE manager_id IS NOT NULL', (err,res) => {
+        const employeeList = res.map(employee => ({name: employee.first_name, value: employee.manager_id}))
+        const employee = employeeList.map(name => name.value)
+        // const employeeValue = employeeList.map(value => value.value)
+        console.log(employee)
+        employeeQuestions[3].choices = employee
+     
+      
   prompt(employeeQuestions)
 
   .then((answer) => {
+    console.log("answer",answer)
     connection.query('INSERT INTO employee SET ?',
     {
       first_name: answer.fName,
       last_name: answer.lName,
-      role_id: roleList.find(role => answer.role === role.title),
+      role_id: answer.role,
+      manager_id: 1,
     },
     (err, res) => {
       if (err) throw err
@@ -140,12 +151,30 @@ function addEmployee() {
     )
   })
 })
+})
 }
 
 function updateEmployeeRole() {
-  connection.query('SELECT * FROM employee', (res,err) => {
-    const employeeList = res.map(({first_name, last_name }) => ({name: first_name + " " + last_name}))
+  connection.query('SELECT * FROM employee', (err, res) => {
+   const employeeList = res.map(({first_name, last_name,  role_id}) => ({name: first_name + " " + last_name + ", " + role_id}))
+   
+   updateEmployeeQuestions[0].choices = employeeList
     console.log(employeeList)
+
+    prompt(updateEmployeeQuestions[0]) 
+
+    .then((answer) => {
+      connection.query('SELECT * FROM role', (err, res) => {
+        console.log(res)
+        const roleList = res.map(({title, id}) => ({name: title, role_id: id}))
+        updateEmployeeQuestions[1].choices = roleList
+        prompt(updateEmployeeQuestions[1])
+
+        .then((answer) => {
+          
+        })
+      })
+    })
   })
 }
 

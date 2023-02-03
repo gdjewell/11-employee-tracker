@@ -6,8 +6,8 @@ const menuQuestion = [
     type: 'list',
     name: 'mainmenu',
     message: 'Please select one of the following options.',
-    choices: [ 'View All Departments', 'View All Roles', 'View All Employees', 'Add A Department', 'Add A Role', 'Add an Employee', 'Update Employee Role'],
-    pageSize: 5,
+    choices: [ 'View All Departments', 'View All Roles', 'View All Employees', 'Add A Department', 'Add A Role', 'Add an Employee', 'Update Employee Role', 'Exit'],
+    pageSize: 6,
   },
   
 ]
@@ -61,6 +61,29 @@ const employeeQuestions = [
     message: 'What is the employee title?',
     choices: [],
   },
+
+  {
+    type: 'list',
+    name: 'managerid',
+    message: 'Who is the manager?',
+    choices: [],
+  },
 ]
 
-module.exports = {menuQuestion, departmentQuestions, roleQuestions, employeeQuestions}
+const updateEmployeeQuestions = [
+  {
+    type: 'list',
+    name: 'employeeName',
+    message: 'What employee would you like to update?',
+    choices: [],
+  },
+
+  {
+    type: 'list',
+    name: 'roleName',
+    message: 'What would you like to update your role as?',
+    choices: [],
+  }
+]
+
+module.exports = {menuQuestion, departmentQuestions, roleQuestions, employeeQuestions, updateEmployeeQuestions}
