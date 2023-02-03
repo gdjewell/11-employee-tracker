@@ -171,7 +171,7 @@ function updateEmployeeRole() {
         prompt(updateEmployeeQuestions[1])
 
         .then((answer) => {
-          
+          connection.query('UPDATE employee SET role_id = ? WHERE id = ?', )
         })
       })
     })
