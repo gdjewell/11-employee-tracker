@@ -58,14 +58,14 @@ const employeeQuestions = [
   {
     type: 'list',
     name: 'role',
-    message: 'What is the employee title?',
+    message: 'What is the employee role ID?',
     choices: [],
   },
 
   {
     type: 'list',
     name: 'managerid',
-    message: 'Who is the manager?',
+    message: 'What is the manager ID?',
     choices: [],
   },
 ]
